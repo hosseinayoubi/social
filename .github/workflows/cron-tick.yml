@@ -1,0 +1,21 @@
+name: Cron Tick
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # every hour
+  workflow_dispatch: {}
+
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call /api/cron/tick
+        env:
+          API_TICK_URL: ${{ secrets.API_TICK_URL }}
+          API_TICK_TOKEN: ${{ secrets.API_TICK_TOKEN }}
+        run: |
+          if [ -z "$API_TICK_URL" ]; then
+            echo "Missing secrets.API_TICK_URL"
+            exit 1
+          fi
+          curl -sS -X POST "$API_TICK_URL"             -H "Authorization: Bearer $API_TICK_TOKEN"             -H "Content-Type: application/json"             -d "{}" | cat
